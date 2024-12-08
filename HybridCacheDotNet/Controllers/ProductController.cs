@@ -22,4 +22,11 @@ public class ProductsController(ProductService productService) : ControllerBase
 
         return Ok(products);
     }
+
+    [HttpDelete("category/{category}")]
+    public async Task<IActionResult> RemoveProductsByCategoryCache(string category)
+    {
+        await productService.RemoveProductsByCategoryFromCacheAsync(category);
+        return NoContent(); // Return 204 No Content
+    }
 }

@@ -14,11 +14,19 @@ public class ProductService(HybridCache cache)
             async token => await FetchProductsFromDatabaseAsync(category, token),
             new HybridCacheEntryOptions
             {
-                Expiration = TimeSpan.FromMinutes(30), // Shared expiration for L1 and L2
-                LocalCacheExpiration = TimeSpan.FromMinutes(5) // L1 expiration
+                Expiration = TimeSpan.FromMinutes(30),
+                LocalCacheExpiration = TimeSpan.FromMinutes(5)
             }, null,
             cancellationToken
         );
+    }
+
+    public async Task RemoveProductsByCategoryFromCacheAsync(string category, CancellationToken cancellationToken = default)
+    {
+        string cacheKey = $"products:category:{category}";
+
+        // Remove the cache entry from both L1 and L2
+        await cache.RemoveAsync(cacheKey, cancellationToken);
     }
 
     private static Task<List<Product>> FetchProductsFromDatabaseAsync(string category, CancellationToken cancellationToken)
